@@ -5,12 +5,15 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConectionBD {
+    private static String caminho = "jdbc:mysql://localhost:3306/bd_museu?useTimezone=true&serverTimezone=UTC";
+    private static String usuario = "root";
+    private static String senha = " ";
     public static Connection conectarBD() {
         Connection conexao=null;
         try {
             if ( conexao == null ) {
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                conexao = DriverManager.getConnection("jdbc:mysql://localhost:3306/bd_museu?useTimezone=true&serverTimezone=UTC", "root", "");
+                conexao = DriverManager.getConnection(caminho,usuario,senha);
                 System.out.println("Banco de dados conectado!");
             }
         }
