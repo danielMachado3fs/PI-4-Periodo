@@ -1,39 +1,35 @@
 package frontend;
 
-import backend.*;
+import backend.UpdateBD;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusListener;
-import java.awt.event.WindowFocusListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.EventListener;
 
-public class UpdateForm {
-
-    //define os componentes
+public class UpdateFormVisitor {
 
     private JLabel lbName, lbEmail, lbPassword, lbLocalization, lbCpf, lbMensage;
     private JTextField tfName, tfEmail,  tfLocalization, tfCpf;
     private JPasswordField password;
-    private JButton update, cancel, data;
-    private JFrame windowUpdate;
+    private JButton update, cancel;
+    private JFrame windowUpdateVisitor;
     private JPanel pName, pEmail, pCPF, pLocalization, pPassword, pButtons, pMensage;
 
     //monta a janela
 
-    UpdateForm(){
+    UpdateFormVisitor(){
         //instancia os componentes
         //labels
 
-        lbMensage = new JLabel("Atualização de cadastro:");
+        lbMensage = new JLabel("Atualizar Cadastro");
         lbMensage.setFont(new Font("Trebuchet", Font.BOLD,20));
         lbName = new JLabel("Nome");
         lbEmail = new JLabel("Email");
-        lbCpf = new JLabel("Por favor, informe o CPF do usuário:");
+        lbCpf = new JLabel("CPF");
         lbPassword = new JLabel("Senha");
         lbLocalization = new JLabel("Localização");
 
@@ -42,14 +38,12 @@ public class UpdateForm {
         tfName = new JTextField(40);
         tfEmail = new JTextField(40);
         tfCpf = new JTextField(20);
-        //tfCpf.setEnabled(false);
+        tfCpf.setEnabled(false);
         tfLocalization = new JTextField(40);
-        password = new JPasswordField(20);
-        password.setEnabled(false);
+        password = new JPasswordField(30);
 
         //buttons
-        data = new JButton("Buscar Dados");
-        data.setSize(new Dimension(15,10));
+
         update = new JButton("Atualizar");
         update.setSize(new Dimension(15,10));
         cancel = new JButton("Cancelar");
@@ -81,16 +75,16 @@ public class UpdateForm {
 
         //configura janela
 
-        windowUpdate = new JFrame("Atualizar Cadastro");
-        windowUpdate.setSize(600,400);
-        windowUpdate.setLayout(new GridLayout(10,1));
-        windowUpdate.setLocationRelativeTo(null);
-        windowUpdate.setVisible(true);
+        windowUpdateVisitor = new JFrame("Atualizar Cadastro");
+        windowUpdateVisitor.setSize(600,400);
+        windowUpdateVisitor.setLayout(new GridLayout(10,1));
+        windowUpdateVisitor.setLocationRelativeTo(null);
+        windowUpdateVisitor.setVisible(true);
 
         //coloca elementos nos paineis
 
         pMensage.add(lbMensage);
-        pCPF.add(lbCpf);    pCPF.add(tfCpf); pCPF.add(data);
+        pCPF.add(lbCpf);    pCPF.add(tfCpf);
         pName.add(lbName);  pName.add(tfName);
         pEmail.add(lbEmail);    pEmail.add(tfEmail);
         pLocalization.add(lbLocalization);  pLocalization.add(tfLocalization);
@@ -99,28 +93,27 @@ public class UpdateForm {
 
         //coloca paineis na janela
 
-        windowUpdate.add(pCPF);
-        windowUpdate.add(pMensage);
-        windowUpdate.add(pName);
-        windowUpdate.add(pEmail);
-        windowUpdate.add(pPassword);
-        windowUpdate.add(pLocalization);
-        windowUpdate.add(pButtons);
+        windowUpdateVisitor.add(pMensage);
+        windowUpdateVisitor.add(pName);
+        windowUpdateVisitor.add(pEmail);
+        windowUpdateVisitor.add(pCPF);
+        windowUpdateVisitor.add(pPassword);
+        windowUpdateVisitor.add(pLocalization);
+        windowUpdateVisitor.add(pButtons);
 
         //instacia classe interna de eventos
-        Events evento = new Events();
+        EventsVisitor evento = new EventsVisitor();
 
         //registra eventos do botão
-        data.addActionListener(evento);
-        update.addActionListener((ActionListener) evento);
-        cancel.addActionListener((ActionListener) evento);
+        update.addActionListener(evento);
+        cancel.addActionListener(evento);
 
     }
 
-    private class Events implements ActionListener {
+    private class EventsVisitor implements ActionListener {
         public void actionPerformed(ActionEvent e){
             String cpf = null;
-            if(e.getSource() == data){
+            /*if(e.getSource() == data){
                 cpf = tfCpf.getText();
                 ResultSet dataUser = UpdateBD.queryUser(cpf);
                 try{dataUser.next();
@@ -131,7 +124,7 @@ public class UpdateForm {
                 }catch (SQLException ex) {
                     JOptionPane.showMessageDialog(null, "Usuário não cadastrado!");
                 }
-            }
+            }*/
 
             if(e.getSource() == update){
                 String name = tfName.getText();
@@ -146,21 +139,21 @@ public class UpdateForm {
                     else {
                         String passwordCri = UpdateBD.getSHA256(upPassword);
                         int up = UpdateBD.updateUser(name, email, passwordCri, localization, cpf);
-                           if(up == 1){
-                               JOptionPane.showMessageDialog(null, "Não foi possivel inserir o usuario");
+                        if(up == 1){
+                            JOptionPane.showMessageDialog(null, "Não foi possivel inserir o usuario");
                         } else {
                             JOptionPane.showMessageDialog(null, "Usuario cadastrado com sucesso!");
                         }
                     }
                 }
             } else if(e.getSource() == cancel){
-                windowUpdate.dispose();
+                windowUpdateVisitor.dispose();
             }
         }
     }
 
     public static void main(String [] args){
-       new UpdateForm();
+        new UpdateFormVisitor();
     }
 
 }
