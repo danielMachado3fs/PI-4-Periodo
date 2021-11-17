@@ -108,7 +108,7 @@ public class UpdateForm {
         windowUpdate.add(pButtons);
 
         //instacia classe interna de eventos
-        Events evento = new Events();
+        eventsUpdate evento = new eventsUpdate();
 
         //registra eventos do botão
         data.addActionListener(evento);
@@ -117,7 +117,7 @@ public class UpdateForm {
 
     }
 
-    private class Events implements ActionListener {
+    private class eventsUpdate implements ActionListener {
         public void actionPerformed(ActionEvent e){
             String cpf = null;
             if(e.getSource() == data){
