@@ -1,20 +1,25 @@
 package frontend;
 
+import backend.UpdateBD;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class LoginGUI {
     private JLabel lbLogin, lbEmail, lbSenha;
     private JTextField tfEmail;
     private JPasswordField pfSenha;
     private JButton btLogin, btCancel;
-    private JPanel pEmail, pSenha, pLogin, pButtons;
+    private JPanel pEmail, pSenha, pLogin, pButtons, pPanels;
     private JFrame windowLogin;
 
     LoginGUI(){
         lbLogin = new JLabel("Login");
+        lbLogin.setFont(new Font("Trebuchet", Font.BOLD,40));
         lbEmail = new JLabel("Email");
         lbSenha = new JLabel("Senha");
 
@@ -34,11 +39,16 @@ public class LoginGUI {
         pLogin.setLayout(new FlowLayout());
         pButtons = new JPanel();
         pButtons.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        pPanels = new JPanel();
+        pPanels.setLayout(new GridLayout(0,1));
 
         pLogin.add(lbLogin);
         pEmail.add(lbEmail);    pEmail.add(tfEmail);
         pSenha.add(lbSenha);    pSenha.add(pfSenha);
         pButtons.add(btLogin);  pButtons.add(btCancel);
+        pPanels.add(pLogin);
+        pPanels.add(pEmail);
+        pPanels.add(pSenha);
 
         eventsLogin eventosLogin = new eventsLogin();
 
@@ -46,23 +56,45 @@ public class LoginGUI {
         btCancel.addActionListener(eventosLogin);
 
         windowLogin = new JFrame("Login");
+        windowLogin.setSize(500,400);
         windowLogin.setLayout(new BorderLayout());
-        windowLogin.add(pLogin);
-        windowLogin.add(pEmail);
-        windowLogin.add(pSenha);
-        windowLogin.add(pButtons);
-        windowLogin.setSize(400,400);
+        windowLogin.add(pPanels, BorderLayout.CENTER);
+        windowLogin.add(pButtons, BorderLayout.SOUTH);
         windowLogin.setLocationRelativeTo(null);
         windowLogin.setVisible(true);
 
     }
 
-    private class eventsLogin implements ActionListener{
+    private class eventsLogin implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String email, senha;
-            if(e.getSource() == btLogin){
+            String data, senha, senhabd = null;
+            ResultSet dataUser;
 
+            if (e.getSource() == btLogin) {
+                data = tfEmail.getText();
+                dataUser = UpdateBD.queryUser(data);
+                System.out.println(dataUser);
+
+                try {
+                    if (!dataUser.next()) {
+                        JOptionPane.showMessageDialog(null, "Usuário incorreto");
+                    }else {
+                        do {
+                            senhabd = dataUser.getString("at_senha");
+                            System.out.println(senhabd);
+                        }while (dataUser.next());
+                        senha = pfSenha.getText();
+
+                        if (senha.equals(senhabd)) {
+                            UpdateFormVisitor window = new UpdateFormVisitor();
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Senha incorreta!");
+                        }
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }

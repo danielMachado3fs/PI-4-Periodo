@@ -9,18 +9,24 @@ import java.security.MessageDigest;
 
 public class UpdateBD {
     //Busca dados do usuário no banco
-    public static ResultSet queryUser(String cpf) {
+    public static ResultSet queryUser(String data) {
         ResultSet resultado=null;
+        String sql = null;
         Connection connection = ConnectionBD.connectBD();
+        if(data.length() == 11){
+            sql =  "SELECT * FROM tb_visitante WHERE at_cpf = ?;";
+        }else{
+            sql =  "SELECT * FROM tb_visitante WHERE at_email = ?;";
+        }
         try {
-            String sql =  "SELECT * FROM tb_visitante WHERE at_cpf = ?;";
             PreparedStatement comando = connection.prepareStatement( sql );
-            comando.setString(1, cpf);
+            comando.setString(1, data);
             resultado = comando.executeQuery();
         }
         catch (SQLException ex) {
             System.out.println("Erro ao consultar na tabela de contatos.");
         }
+        System.out.println(resultado);
         return resultado;
     }
 
